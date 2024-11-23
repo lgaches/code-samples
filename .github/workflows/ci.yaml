@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "0001-swift-hummingbird-api/**"
+  pull_request:
+    paths:
+      - "0001-swift-hummingbird-api/**"
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-ci
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: 0001-swift-hummingbird-api
+    strategy:
+      matrix:
+        images: ["swift:6.0"]
+    container:
+      image: ${{ matrix.images }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Tests
+        run: swift test
